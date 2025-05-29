@@ -71,8 +71,9 @@ switch:
   - platform: "miot"
     miot_siid: 2
     miot_piid: 8
-    name: "Dry"
+    name: "Air Drying"
     icon: mdi:water-minus
+    entity_category: config
   - platform: "miot"
     miot_siid: 4
     miot_piid: 1
@@ -91,8 +92,22 @@ switch:
     name: "Clean Mode"
     icon: mdi:water-minus
     entity_category: config
+#TODO: 
+#- target humidity
+#
 
 select:
+  - platform: "miot"
+    miot_siid: 2
+    miot_piid: 5
+    name: "Mode"
+    #TODO: change icon
+    icon: mdi:brightness-6
+    entity_category: config
+    options:
+      0: "Favourite"
+      1: "Auto"
+      2: "Sleep"
   - platform: "miot"
     miot_siid: 5
     miot_piid: 2
@@ -100,17 +115,49 @@ select:
     icon: mdi:brightness-6
     entity_category: config
     options:
-      0: "Dark"
-      1: "Glimmer"
+      0: "Off"
+      1: "Dim"
       2: "Brightest"
 
 sensor:
+  - platform: internal_temperature
+    name: "MCU Temperature"
   - platform: "miot"
     miot_siid: 2
     miot_piid: 2
     name: "Device Fault Code"
     icon: mdi:fan-alert
     entity_category: diagnostic
+  - platform: "miot"
+    miot_siid: 2
+    miot_piid: 7
+    name: "Water Level"
+    #TODO: change icon, confirm options
+    device_class: measurement
+    icon: mdi:water-check
+    entity_category: diagnostic
+    options:
+      0: "Empty"
+      1: "Normal"
+      2: "Full"
+  - platform: "miot"
+    miot_siid: 2
+    miot_piid: 9
+    name: "Status"
+    #TODO: change icon, confirm options
+    icon: mdi:water-percent
+    options:
+      1: "Close"
+      2: "Work"
+      3: "Dry"
+      4: "Clean"
+    #TODO: might not be used
+  - platform: "miot"
+    miot_siid: 2
+    miot_piid: 11
+    name: "Motor Speed"
+    unit_of_measurement: "rpm"
+    icon: mdi:fan
   - platform: "miot"
     miot_siid: 3
     miot_piid: 7
@@ -122,34 +169,54 @@ sensor:
   - platform: "miot"
     miot_siid: 3
     miot_piid: 9
-    name: "Relative Humidity"
+    name: "Humidity"
     unit_of_measurement: "%"
     device_class: humidity
     state_class: "measurement"
     icon: mdi:water-percent
-  - platform: "miot"
-    miot_siid: 2
-    miot_piid: 7
-    name: "Water Level"
-    unit_of_measurement: "%"
-    state_class: "measurement"
-    icon: mdi:water-percent
-    filters:
-      - clamp:
-          min_value: 0
-          max_value: 100
-          ignore_out_of_range: true
-  - platform: "miot"
-    miot_siid: 2
-    miot_piid: 11
-    name: "Motor Speed"
-    unit_of_measurement: "rpm"
-    icon: mdi:fan
   - platform: "miot"
     miot_siid: 7
     miot_piid: 1
     name: "Actual Speed"
     unit_of_measurement: "rpm"
     icon: mdi:fan
-  - platform: internal_temperature
-    name: "MCU Temperature"
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 4
+    name: "Country Code"
+    #TODO: change icon, confirm options
+    icon: mdi:fan
+    options:
+      44: "EU"
+      81: "JP"
+      82: "KR"
+      86: "CH"
+      886: "TW"
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 5
+    name: "Clean mode"
+    icon: mdi:shimmer
+    entity_category: config
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 6
+    name: "Self-clean progress"
+    unit_of_measurement: "min"
+    #TODO: change device class, icon, scale 0-30, might translate to %
+    device_class: humidity
+    state_class: "measurement"
+    icon: mdi:fan
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 7
+    name: "Pump state"
+    #TODO: change icon
+    icon: mdi:fan
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 8
+    name: "Pump count"
+    #TODO: change icon
+    state_class: "measurement"
+    icon: mdi:fan
