@@ -5,7 +5,7 @@ external_components:
 
 esphome:
   name: humidifier
-  friendly_name: Air Humidifier
+  friendly_name: Smartmi Evaporative Humidifier 3
   comment: Smartmi Evaporative Humidifier 3 (zhimi.humidifier.ca6)
   project:
     name: "dhewg.esphome-miot"
@@ -55,6 +55,28 @@ uart:
 miot:
   id: miot_main
 
+binary_sensor:
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 7
+    id: pump_state
+    name: "Pump state"
+    device_class: running
+    icon: mdi:water-pump
+    entity_category: diagnostic
+
+button:
+  - platform: "miot"
+    miot_siid: 2
+    miot_aiid: 1
+    id: toggle
+    name: "Power Toggle"
+  - platform: "miot"
+    miot_siid: 7
+    miot_aiid: 1
+    id: toggle_mode
+    name: "Mode Toggle"
+
 fan:
   - platform: "miot"
     name: "Fan"
@@ -67,42 +89,25 @@ fan:
       min_value: 0
       max_value: 3
 
-switch:
+number:
   - platform: "miot"
     miot_siid: 2
-    miot_piid: 8
-    name: "Air Drying"
-    icon: mdi:water-minus
+    miot_piid: 6
+    id: target_humidity
+    name: "Target Humidity"
+    icon: mdi:water-percent
     entity_category: config
-  - platform: "miot"
-    miot_siid: 4
-    miot_piid: 1
-    name: "Notification Sounds"
-    icon: mdi:volume-high
-    entity_category: config
-  - platform: "miot"
-    miot_siid: 6
-    miot_piid: 1
-    name: "Child Lock"
-    icon: mdi:lock
-    entity_category: config
-  - platform: "miot"
-    miot_siid: 7
-    miot_piid: 5
-    name: "Clean Mode"
-    icon: mdi:water-minus
-    entity_category: config
-#TODO: 
-#- target humidity
-#
+    min_value: 30
+    max_value: 60
+    step: 1
 
 select:
   - platform: "miot"
     miot_siid: 2
     miot_piid: 5
-    name: "Mode"
-    #TODO: change icon
-    icon: mdi:brightness-6
+    id: fan_level
+    name: "Fan Level"
+    icon: mdi:fan
     entity_category: config
     options:
       0: "Favourite"
@@ -111,46 +116,84 @@ select:
   - platform: "miot"
     miot_siid: 5
     miot_piid: 2
-    name: "Display brightness"
+    id: brightness
+    name: "Display Brightness"
     icon: mdi:brightness-6
     entity_category: config
     options:
-      0: "Off"
-      1: "Dim"
+      0: "Dark"
+      1: "Glimmer"
       2: "Brightest"
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 4
+    id: country_code
+    name: "Country Code"
+    icon: mdi:flag-variant
+    entity_category: config
+    options:
+      44: "EU"
+      81: "JP"
+      82: "KR"
+      86: "CH"
+      886: "TW"
 
 sensor:
-  - platform: internal_temperature
-    name: "MCU Temperature"
+  - platform: "miot"
+    miot_siid: 1
+    miot_piid: 1
+    id: manufacturer
+    name: "Device Manufacturer"
+  - platform: "miot"
+    miot_siid: 1
+    miot_piid: 2
+    id: model
+    name: "Device Model"
+  - platform: "miot"
+    miot_siid: 1
+    miot_piid: 3
+    id: serial_number
+    name: "Device ID"
+  - platform: "miot"
+    miot_siid: 1
+    miot_piid: 4
+    id: firmware_revision
+    name: "Current Firmware Version"
+  - platform: "miot"
+    miot_siid: 1
+    miot_piid: 5
+    id: serial_no
+    name: "Serial Number"
   - platform: "miot"
     miot_siid: 2
     miot_piid: 2
+    id: fault
     name: "Device Fault Code"
     icon: mdi:fan-alert
     entity_category: diagnostic
   - platform: "miot"
     miot_siid: 2
     miot_piid: 7
+    id: water_level
     name: "Water Level"
-    #TODO: change icon, confirm options
     device_class: measurement
     icon: mdi:water-check
-    entity_category: diagnostic
-    options:
-      0: "Empty"
-      1: "Normal"
-      2: "Full"
+    filter:
+      map:
+        - 0 -> "Empty"
+        - 1 -> "Normal"
+        - 2 -> "Full"
   - platform: "miot"
     miot_siid: 2
     miot_piid: 9
+    id: status
     name: "Status"
-    #TODO: change icon, confirm options
-    icon: mdi:water-percent
-    options:
-      1: "Close"
-      2: "Work"
-      3: "Dry"
-      4: "Clean"
+    filter:
+      map:
+        - 1 -> "Close"
+        - 2 -> "Work"
+        - 3 -> "Dry"
+        - 4 -> "Clean"
     #TODO: might not be used
   - platform: "miot"
     miot_siid: 2
@@ -161,6 +204,7 @@ sensor:
   - platform: "miot"
     miot_siid: 3
     miot_piid: 7
+    id: temperature
     name: "Temperature"
     unit_of_measurement: "°C"
     device_class: temperature
@@ -169,54 +213,67 @@ sensor:
   - platform: "miot"
     miot_siid: 3
     miot_piid: 9
-    name: "Humidity"
+    name: "Relative Humidity"
     unit_of_measurement: "%"
     device_class: humidity
     state_class: "measurement"
     icon: mdi:water-percent
-  - platform: "miot"
-    miot_siid: 7
-    miot_piid: 1
-    name: "Actual Speed"
-    unit_of_measurement: "rpm"
-    icon: mdi:fan
-  - platform: "miot"
-    miot_siid: 7
-    miot_piid: 4
-    name: "Country Code"
-    #TODO: change icon, confirm options
-    icon: mdi:fan
-    options:
-      44: "EU"
-      81: "JP"
-      82: "KR"
-      86: "CH"
-      886: "TW"
-  - platform: "miot"
-    miot_siid: 7
-    miot_piid: 5
-    name: "Clean mode"
-    icon: mdi:shimmer
-    entity_category: config
+  # - platform: "miot"
+  #   miot_siid: 7
+  #   miot_piid: 1
+  #   id: actual_speed
+  #   name: "Actual Speed"
+  #   unit_of_measurement: "rpm"
+  #   icon: mdi:fan
   - platform: "miot"
     miot_siid: 7
     miot_piid: 6
+    id: self_clean_percent
     name: "Self-clean progress"
     unit_of_measurement: "min"
-    #TODO: change device class, icon, scale 0-30, might translate to %
-    device_class: humidity
+    #TODO: scale 0-30, might translate to %
+    device_class: "duration"
     state_class: "measurement"
-    icon: mdi:fan
-  - platform: "miot"
-    miot_siid: 7
-    miot_piid: 7
-    name: "Pump state"
-    #TODO: change icon
-    icon: mdi:fan
+    icon: mdi:progress-clock
   - platform: "miot"
     miot_siid: 7
     miot_piid: 8
+    id: pump_cnt
     name: "Pump count"
-    #TODO: change icon
-    state_class: "measurement"
-    icon: mdi:fan
+    state_class: "total_increasing"
+    icon: mdi:counter
+
+switch:
+  # - platform: miot
+  #   id: on
+  #   name: Switch Status
+  #   miot_siid: 2
+  #   miot_piid: 1
+  - platform: "miot"
+    miot_siid: 2
+    miot_piid: 8
+    id: automatic_air_drying
+    name: "Air Drying"
+    icon: mdi:water-minus
+    entity_category: config
+  - platform: "miot"
+    miot_siid: 4
+    miot_piid: 1
+    id: alarm
+    name: "Notification Sounds"
+    icon: mdi:volume-high
+    entity_category: config
+  - platform: "miot"
+    miot_siid: 6
+    miot_piid: 1
+    id: physical_controls_locked
+    name: "Child Lock"
+    icon: mdi:lock
+    entity_category: config
+  - platform: "miot"
+    miot_siid: 7
+    miot_piid: 5
+    id: clean
+    name: "Clean Mode"
+    icon: mdi:shimmer
+    entity_category: config
