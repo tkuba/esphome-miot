@@ -48,6 +48,7 @@ wifi:
 captive_portal:
 
 uart:
+  #TODO: confirm gpios after opening the case
   tx_pin: GPIO17
   rx_pin: GPIO16
   baud_rate: 115200
